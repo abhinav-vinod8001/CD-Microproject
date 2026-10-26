@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKSHARA - Malayalam Educational Compiler & Web IDE</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="ide-root">
+        <!-- Top Navigation Bar -->
+        <header class="ide-navbar">
+            <div class="nav-brand">
+                <i class="fa-solid fa-code brand-icon"></i>
+                <span class="brand-title">AKSHARA <small style="font-size: 0.75rem; font-weight: normal; opacity: 0.85;">(അക്ഷര)</small></span>
+                <span class="brand-tag">IDE</span>
+            </div>
+
+            <div class="nav-controls">
+                <!-- Sample Programs -->
+                <div class="control-group">
+                    <label for="sample-select" class="control-label">Sample:</label>
+                    <select id="sample-select" class="form-select" title="Load sample program">
+                        <option value="" disabled selected>Select program...</option>
+                    </select>
+                </div>
+
+                <!-- Translation -->
+                <div class="control-group btn-group">
+                    <button id="btn-translate-eng" class="btn btn-secondary" title="Translate keywords to English (Ctrl+Shift+E)">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i> To English
+                    </button>
+                    <button id="btn-translate-mal" class="btn btn-secondary" title="Translate keywords to Malayalam (Ctrl+Shift+M)">
+                        <i class="fa-solid fa-repeat"></i> To മലയാളം
+                    </button>
+                </div>
+
+                <!-- Educational Multi-Language Studio -->
+                <div class="control-group">
+                    <button id="btn-open-multilang" class="btn btn-education" title="Convert to C, Java, and Python with Groq AI for educational learning">
+                        <i class="fa-solid fa-graduation-cap"></i> Learn in C / Java / Python
+                    </button>
+                </div>
+
+                <!-- Actions -->
+                <div class="control-group">
+                    <button id="btn-run" class="btn btn-success" title="Run program (Ctrl+Enter)">
+                        <i class="fa-solid fa-play"></i> Run
+                    </button>
+                    <button id="btn-toggle-inspector" class="btn btn-secondary" title="View all 8 compiler stages">
+                        <i class="fa-solid fa-layer-group"></i> Compiler Stages
+                    </button>
+                </div>
+
+                <!-- Theme Toggle -->
+                <div class="control-group">
+                    <button id="btn-theme-toggle" class="btn btn-icon" title="Toggle Light / Dark mode" aria-label="Toggle Theme">
+                        <i class="fa-solid fa-moon" id="theme-icon"></i>
+                        <span id="theme-text">Dark</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Malayalam Quick-Input Toolbar -->
+        <nav class="snippet-toolbar" aria-label="Malayalam Keyword Helper">
+            <span class="toolbar-title">Keywords:</span>
+            <div class="toolbar-buttons">
+                <button class="kw-btn" data-insert="കാണിക്കുക ">കാണിക്കുക <small>print</small></button>
+                <button class="kw-btn" data-insert="വായിക്കുക ">വായിക്കുക <small>input</small></button>
+                <button class="kw-btn" data-insert="എങ്കിൽ ">എങ്കിൽ <small>if</small></button>
+                <button class="kw-btn" data-insert="അല്ലെങ്കിൽ ">അല്ലെങ്കിൽ <small>else</small></button>
+                <button class="kw-btn" data-insert="ആവർത്തിക്കുക ">ആവർത്തിക്കുക <small>while</small></button>
+                <button class="kw-btn" data-insert="അവസാനിപ്പിക്കുക">അവസാനിപ്പിക്കുക <small>end</small></button>
+                <span class="kw-sep"></span>
+                <button class="kw-btn" data-insert="ശരി">ശരി <small>true</small></button>
+                <button class="kw-btn" data-insert="തെറ്റ്">തെറ്റ് <small>false</small></button>
+                <button class="kw-btn" data-insert=" ഒപ്പം ">ഒപ്പം <small>and</small></button>
+                <button class="kw-btn" data-insert=" അഥവാ ">അഥവാ <small>or</small></button>
+                <button class="kw-btn" data-insert=" അല്ല ">അല്ല <small>not</small></button>
+                <span class="kw-sep"></span>
+                <button class="kw-btn kw-op" data-insert=" == ">==</button>
+                <button class="kw-btn kw-op" data-insert=" != ">!=</button>
+                <button class="kw-btn kw-op" data-insert=" <= ">&lt;=</button>
+                <button class="kw-btn kw-op" data-insert=" >= ">&gt;=</button>
+            </div>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="ide-workspace" id="ide-workspace">
+            <!-- Left: Editor Pane -->
+            <section class="pane pane-editor" id="pane-editor">
+                <div class="panel-header">
+                    <div class="file-tab active">
+                        <i class="fa-solid fa-file-code"></i>
+                        <span>main.mal</span>
+                    </div>
+                    <div class="panel-tools">
+                        <button id="btn-copy-code" class="tool-btn" title="Copy code">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                        <button id="btn-clear-code" class="tool-btn" title="Clear editor">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button id="btn-reset-code" class="tool-btn" title="Reset sample code">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="editor-body">
+                    <div class="editor-gutter" id="editor-gutter">
+                        <div class="line-num">1</div>
+                    </div>
+                    <textarea id="code-editor" class="editor-textarea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Write Malayalam or English code here..."></textarea>
+                </div>
+
+                <div class="editor-footer">
+                    <div class="footer-left">
+                        <span id="cursor-pos">Ln 1, Col 1</span>
+                        <span class="divider">|</span>
+                        <span id="line-count">1 lines</span>
+                        <span class="divider">|</span>
+                        <span id="char-count">0 chars</span>
+                    </div>
+                    <div class="footer-right">
+                        <span id="lang-indicator">Malayalam / UTF-8</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resizer divider -->
+            <div class="pane-resizer" id="pane-resizer" title="Drag to resize"></div>
+
+            <!-- Right: Console & Compiler Stages -->
+            <section class="pane pane-output" id="pane-output">
+                <!-- Upper: Console Window -->
+                <div class="panel console-panel" id="console-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>Console Output</span>
+                            <span id="execution-badge" class="badge">READY</span>
+                            <span id="exec-time-badge" class="exec-time" style="display:none;"></span>
+                        </div>
+                        <div class="panel-tools">
+                            <button id="btn-toggle-stdin" class="tool-btn tool-btn-text" title="Toggle pre-filled Stdin input box">
+                                <i class="fa-solid fa-keyboard"></i> Stdin
+                            </button>
+                            <button id="btn-clear-terminal" class="tool-btn" title="Clear console">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Optional Stdin Drawer -->
+                    <div class="stdin-box" id="stdin-drawer" style="display: none;">
+                        <div class="stdin-label">Standard Input (stdin) - values fed to വായിക്കുക / input:</div>
+                        <textarea id="stdin-input" class="stdin-input" rows="2" placeholder="One input per line (optional, or type interactively below)"></textarea>
+                    </div>
+
+                    <!-- Console Body -->
+                    <div class="console-body" id="terminal-body">
+                        <div class="terminal-welcome">Press "Run" to compile and execute program.</div>
+                        <pre id="terminal-output" class="console-stream"></pre>
+                    </div>
+                </div>
+
+                <!-- Lower: Compiler Stages Inspector -->
+                <div class="panel stages-panel" id="inspector-card">
+                    <div class="panel-header stages-header">
+                        <div class="tabs-nav" role="tablist">
+                            <button class="stage-tab active" data-tab="tab-tokens" role="tab">1. Tokens</button>
+                            <button class="stage-tab" data-tab="tab-parse-tree" role="tab">2. Parse Tree</button>
+                            <button class="stage-tab" data-tab="tab-ast" role="tab">3. AST</button>
+                            <button class="stage-tab" data-tab="tab-symbols" role="tab">4. Symbols</button>
+                            <button class="stage-tab" data-tab="tab-tac" role="tab">5. TAC (IR)</button>
+                            <button class="stage-tab" data-tab="tab-optimization" role="tab">6. Optimized</button>
+                            <button class="stage-tab" data-tab="tab-target" role="tab">7. Assembly</button>
+                            <button class="stage-tab" data-tab="tab-vm" role="tab">8. VM Trace</button>
+                        </div>
+                        <div class="panel-tools">
+                            <button id="btn-copy-stage" class="tool-btn" title="Copy stage content">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="stages-body">
+                        <!-- 1. Tokens -->
+                        <div class="stage-pane active" id="tab-tokens" role="tabpanel">
+                            <div class="stage-status-bar">
+                                <span>Lexical Analyzer Token Stream:</span>
+                                <span id="token-count-badge" class="count-badge">0 tokens</span>
+                            </div>
+                            <div class="table-container">
+                                <table class="table" id="tokens-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th style="width: 100px;">Position</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tokens-tbody">
+                                        <tr><td colspan="4" class="empty-cell">No compilation performed yet.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 2. Parse Tree -->
+                        <div class="stage-pane" id="tab-parse-tree" role="tabpanel">
+                            <pre id="parse-tree-text" class="raw-code-box">Waiting for compilation...</pre>
+                        </div>
+
+                        <!-- 3. AST -->
+                        <div class="stage-pane" id="tab-ast" role="tabpanel">
+                            <div class="stage-status-bar">
+                                <span>Abstract Syntax Tree:</span>
+                                <div class="view-switch">
+                                    <button id="btn-ast-visual" class="switch-btn active">Tree</button>
+                                    <button id="btn-ast-text" class="switch-btn">Text</button>
+                                    <button id="btn-ast-json" class="switch-btn">JSON</button>
+                                </div>
+                            </div>
+                            <div id="ast-visual-view" class="ast-visual-box">
+                                <div class="empty-cell">Waiting for compilation...</div>
+                            </div>
+                            <pre id="ast-text-view" class="raw-code-box" style="display:none;"></pre>
+                            <pre id="ast-json-view" class="raw-code-box" style="display:none;"></pre>
+                        </div>
+
+                        <!-- 4. Symbol Table -->
+                        <div class="stage-pane" id="tab-symbols" role="tabpanel">
+                            <div class="diagnostics-alert" id="diagnostics-box" style="display: none;">
+                                <div class="alert-title"><i class="fa-solid fa-triangle-exclamation"></i> Compiler Warnings / Errors:</div>
+                                <ul id="diagnostics-list"></ul>
+                            </div>
+                            <div class="table-container">
+                                <table class="table" id="symbols-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable Name</th>
+                                            <th>Inferred Type</th>
+                                            <th>Scope</th>
+                                            <th>Defined Line</th>
+                                            <th>References</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="symbols-tbody">
+                                        <tr><td colspan="5" class="empty-cell">No symbols recorded.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 5. TAC -->
+                        <div class="stage-pane" id="tab-tac" role="tabpanel">
+                            <pre id="tac-code-view" class="raw-code-box">Waiting for compilation...</pre>
+                        </div>
+
+                        <!-- 6. Optimization -->
+                        <div class="stage-pane" id="tab-optimization" role="tabpanel">
+                            <div class="opt-log-box" id="opt-summary">
+                                <div class="opt-log-title">Optimization Passes Applied:</div>
+                                <ul id="opt-logs-list" class="opt-list">
+                                    <li>(No optimizations performed yet)</li>
+                                </ul>
+                            </div>
+                            <div class="split-view">
+                                <div class="split-col">
+                                    <div class="col-header">Original TAC (IR)</div>
+                                    <pre id="opt-orig-tac" class="raw-code-box"></pre>
+                                </div>
+                                <div class="split-col">
+                                    <div class="col-header">Optimized TAC</div>
+                                    <pre id="opt-final-tac" class="raw-code-box"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Target Assembly -->
+                        <div class="stage-pane" id="tab-target" role="tabpanel">
+                            <pre id="target-assembly-view" class="raw-code-box">Waiting for compilation...</pre>
+                        </div>
+
+                        <!-- 8. VM Trace -->
+                        <div class="stage-pane" id="tab-vm" role="tabpanel">
+                            <div class="vm-section">
+                                <div class="section-label">Final Memory Environment:</div>
+                                <div id="vm-env-vars" class="env-chips">
+                                    <span class="empty-cell">No variables stored</span>
+                                </div>
+                            </div>
+                            <div class="vm-section">
+                                <div class="section-label">Execution Trace:</div>
+                                <pre id="vm-trace-view" class="raw-code-box"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Educational Multi-Language Studio Modal -->
+    <div class="modal-backdrop" id="multilang-modal" style="display: none;">
+        <div class="modal-container multilang-dialog">
+            <header class="modal-header">
+                <div class="modal-title-group">
+                    <i class="fa-solid fa-graduation-cap modal-icon"></i>
+                    <div>
+                        <h2 class="modal-heading">Educational Multi-Language Studio</h2>
+                        <p class="modal-subheading">Translates Malayalam keywords & variables into standard <strong>Python</strong>, <strong>Java</strong>, and <strong>C</strong> code with educational replacement dictionaries.</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <span id="multilang-engine-badge" class="badge">Checking engine...</span>
+                    <button id="btn-open-groq-key" class="btn btn-secondary btn-sm" title="Configure Groq API Key">
+                        <i class="fa-solid fa-key"></i> <span id="groq-key-btn-text">Groq Key</span>
+                    </button>
+                    <button id="btn-close-multilang" class="btn btn-icon btn-sm" title="Close Studio" aria-label="Close modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="modal-body multilang-body" id="multilang-body">
+                <!-- Status Notice Banner -->
+                <div id="multilang-notice-banner" class="notice-banner" style="display: none;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span id="multilang-notice-text"></span>
+                </div>
+
+                <!-- Studio Top Controls -->
+                <div class="studio-controls">
+                    <div class="studio-lang-tabs" role="tablist">
+                        <button class="edu-tab active" data-lang="python"><i class="fa-brands fa-python"></i> Python 3</button>
+                        <button class="edu-tab" data-lang="java"><i class="fa-brands fa-java"></i> Java (Main.java)</button>
+                        <button class="edu-tab" data-lang="c"><i class="fa-solid fa-c"></i> C (C99)</button>
+                        <button class="edu-tab" data-lang="all"><i class="fa-solid fa-table-columns"></i> Side-by-Side (All 3)</button>
+                    </div>
+                    <div class="studio-tools">
+                        <button id="btn-refresh-multilang" class="btn btn-secondary btn-sm" title="Re-convert current editor code">
+                            <i class="fa-solid fa-arrows-rotate"></i> Re-Convert
+                        </button>
+                        <button id="btn-copy-converted" class="btn btn-secondary btn-sm" title="Copy converted code">
+                            <i class="fa-regular fa-copy"></i> Copy Code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner State -->
+                <div id="multilang-loading" class="studio-loading" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                    <p id="multilang-loading-text">Analyzing Malayalam program with Groq AI (LLaMA 3.3)...</p>
+                </div>
+
+                <!-- Main Comparison Area -->
+                <div id="multilang-content-area" class="multilang-content-area">
+                    <!-- Standard Two-Column View: Original vs Selected Target -->
+                    <div class="code-compare-grid" id="code-compare-grid">
+                        <!-- Left: Original Malayalam Code (Readonly) -->
+                        <div class="compare-col">
+                            <div class="col-title-bar">
+                                <span class="col-title"><i class="fa-solid fa-code"></i> Original Malayalam Program</span>
+                                <span class="col-badge">Source (.mal)</span>
+                            </div>
+                            <div class="code-view-container">
+                                <pre id="edu-orig-code" class="code-display"></pre>
+                            </div>
+                        </div>
+
+                        <!-- Right: Converted Target Code -->
+                        <div class="compare-col">
+                            <div class="col-title-bar">
+                                <span class="col-title" id="target-col-title"><i class="fa-brands fa-python"></i> Converted Python Code</span>
+                                <span class="col-badge" id="target-col-badge">Target (Python 3)</span>
+                            </div>
+                            <div class="code-view-container">
+                                <pre id="edu-target-code" class="code-display"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3-Way Grid (Side-by-Side All Three) -->
+                    <div class="three-way-grid" id="three-way-grid" style="display: none;">
+                        <div class="compare-col">
+                            <div class="col-title-bar">
+                                <span class="col-title"><i class="fa-brands fa-python"></i> Python 3</span>
+                            </div>
+                            <div class="code-view-container">
+                                <pre id="edu-code-python" class="code-display"></pre>
+                            </div>
+                        </div>
+                        <div class="compare-col">
+                            <div class="col-title-bar">
+                                <span class="col-title"><i class="fa-brands fa-java"></i> Java (Main.java)</span>
+                            </div>
+                            <div class="code-view-container">
+                                <pre id="edu-code-java" class="code-display"></pre>
+                            </div>
+                        </div>
+                        <div class="compare-col">
+                            <div class="col-title-bar">
+                                <span class="col-title"><i class="fa-solid fa-c"></i> C (C99)</span>
+                            </div>
+                            <div class="code-view-container">
+                                <pre id="edu-code-c" class="code-display"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variable & Keyword Replacement Dictionary Table -->
+                    <div class="edu-section">
+                        <div class="edu-section-header">
+                            <div class="edu-section-title">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                                <span>വേരിയബിളുകളും കീവേഡുകളും (Replaced Variables & Keywords Dictionary)</span>
+                            </div>
+                            <span class="edu-section-badge" id="edu-dict-count">0 items replaced</span>
+                        </div>
+                        <p class="edu-section-desc">മലയാളത്തിലെ വേരിയബിളുകളും കീവേഡുകളും സ്റ്റാൻഡേർഡ് ഇംഗ്ലീഷ് പ്രോഗ്രാമിംഗിലേക്ക് മാറിയതിന്റെ വിശദമായ വിവരണം:</p>
+                        <div class="table-container">
+                            <table class="table" id="edu-dict-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%;">മലയാളം (Original)</th>
+                                        <th style="width: 25%;">ഇംഗ്ലീഷ് പരിഭാഷ (English Name)</th>
+                                        <th style="width: 15%;">വിഭാഗം (Type)</th>
+                                        <th style="width: 35%;">വിശദീകരണവും ധർമ്മവും (Role & Explanation)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="edu-dict-tbody">
+                                    <tr><td colspan="4" class="empty-cell">വേരിയബിളുകൾ പരിഭാഷപ്പെടുത്തുന്നു...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Educational Concept Notes -->
+                    <div class="edu-section">
+                        <div class="edu-section-header">
+                            <div class="edu-section-title">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span>ഭാഷാ താരതമ്യ പഠന സഹായി (Language Concepts Guide)</span>
+                            </div>
+                        </div>
+                        <p class="edu-section-desc">ഇതേ പ്രോഗ്രാം Python, Java, C എന്നിവയിൽ എങ്ങനെ പ്രവർത്തിക്കുന്നു എന്ന് മലയാളത്തിൽ വായിച്ചു മനസ്സിലാക്കാം:</p>
+                        <div class="edu-cards-grid">
+                            <div class="edu-card">
+                                <div class="edu-card-header">
+                                    <i class="fa-brands fa-python edu-card-icon py-color"></i>
+                                    <h4>പൈത്തൺ (Python 3)</h4>
+                                </div>
+                                <div class="edu-card-body" id="edu-notes-python">
+                                    ഡൈനാമിക് ടൈപ്പിംഗ് ഉപയോഗിക്കുന്നു; ടൈപ്പുകൾ മുൻകൂട്ടി പറയേണ്ടതില്ല; ബ്ലോക്കുകൾ ഇൻഡന്റേഷൻ വഴിയാണ് തിരിക്കുന്നത്.
+                                </div>
+                            </div>
+
+                            <div class="edu-card">
+                                <div class="edu-card-header">
+                                    <i class="fa-brands fa-java edu-card-icon java-color"></i>
+                                    <h4>ജാവ (Java)</h4>
+                                </div>
+                                <div class="edu-card-body" id="edu-notes-java">
+                                    പൂർണ്ണമായും ഒബ്ജക്റ്റ് ഓറിയന്റഡ്; <code>public class Main</code> നിർബന്ധം; വേരിയബിൾ ടൈപ്പുകൾ പ്രഖ്യാപിക്കണം; Scanner ഉപയോഗിച്ച് ഇൻപുട്ട് സ്വീകരിക്കുന്നു.
+                                </div>
+                            </div>
+
+                            <div class="edu-card">
+                                <div class="edu-card-header">
+                                    <i class="fa-solid fa-c edu-card-icon c-color"></i>
+                                    <h4>സി പ്രോഗ്രാമിംഗ് (C99)</h4>
+                                </div>
+                                <div class="edu-card-body" id="edu-notes-c">
+                                    സിസ്റ്റം ലെവൽ ഭാഷ; <code>#include &lt;stdio.h&gt;</code> ലൈബ്രറി; printf/scanf-ൽ <code>%d</code> ഫോർമാറ്റ് സ്പെസിഫയറുകൾ ഉപയോഗിക്കുന്നു.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overall Summary -->
+                        <div class="edu-summary-box" id="edu-notes-summary">
+                            <strong>താരതമ്യ സംഗ്രഹം:</strong> നിങ്ങൾ മലയാളത്തിൽ ചിന്തിച്ചുണ്ടാക്കിയ അതേ അൽഗോരിതവും യുക്തിയും തന്നെയാണ് യഥാർത്ഥത്തിൽ പൈത്തൺ, ജാവ, സി എന്നീ ഭാഷകളിലും പ്രവർത്തിക്കുന്നത്!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <span class="footer-hint"><i class="fa-solid fa-shield-halved"></i> Converted safely without modifying your active editor code.</span>
+                <button class="btn btn-secondary" id="btn-dismiss-multilang">Close Studio</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Groq API Key & Model Settings Modal -->
+    <div class="modal-backdrop" id="groq-key-modal" style="display: none;">
+        <div class="modal-container key-modal-dialog">
+            <header class="modal-header">
+                <div class="modal-title-group">
+                    <i class="fa-solid fa-key modal-icon"></i>
+                    <div>
+                        <h3 class="modal-heading">Groq Model & API Key Configuration</h3>
+                        <p class="modal-subheading">Power AI variable translation with high-speed <strong>Qwen</strong> & <strong>GPT-OSS</strong> models on Groq.</p>
+                    </div>
+                </div>
+                <button id="btn-close-key-modal" class="btn btn-icon btn-sm" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="groq-model-select" class="form-label">Select AI Model (Non-Llama):</label>
+                    <select id="groq-model-select" class="form-select" style="width: 100%; padding: 7px 10px; font-size: 12px;">
+                        <option value="qwen/qwen3.8-27b" selected>Qwen 3.8 27B (qwen/qwen3.8-27b) [Recommended - Multilingual]</option>
+                        <option value="openai/gpt-oss-120b">OpenAI GPT-OSS 120B (openai/gpt-oss-120b) [High Reasoning]</option>
+                        <option value="qwen-qwq-32b">Qwen QwQ 32B (qwen-qwq-32b) [Deep Coding & Math]</option>
+                        <option value="openai/gpt-oss-20b">OpenAI GPT-OSS 20B (openai/gpt-oss-20b) [Ultra-Fast]</option>
+                    </select>
+                    <small class="form-help">Uses advanced non-Llama models from Alibaba Cloud (Qwen series) and OpenAI (GPT-OSS series) hosted on Groq.</small>
+                </div>
+
+                <div class="form-group" style="margin-top: 14px;">
+                    <label for="groq-api-key-input" class="form-label">Groq API Key (starts with <code>gsk_...</code>):</label>
+                    <input type="password" id="groq-api-key-input" class="form-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                    <small class="form-help">Stored locally in your browser and sent only to Groq. If left blank, the built-in offline educational transpiler is used automatically.</small>
+                </div>
+                <div id="key-status-message" class="key-status" style="display: none;"></div>
+            </div>
+            <footer class="modal-footer">
+                <button id="btn-clear-key" class="btn btn-secondary">Clear Saved Key</button>
+                <button id="btn-save-key" class="btn btn-primary">Save & Apply Settings</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/editor.js"></script>
+    <script src="/static/js/terminal.js"></script>
+    <script src="/static/js/inspector.js"></script>
+    <script src="/static/js/multilang.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+

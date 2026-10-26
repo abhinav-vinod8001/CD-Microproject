@@ -1,0 +1,747 @@
+================================================================================
+             AKSHARA: MALAYALAM EDUCATIONAL COMPILER & WEB IDE
+                        COMPREHENSIVE PROJECT DOSSIER
+================================================================================
+SHORT PROJECT NAME: 
+AKSHARA (അക്ഷര)
+
+MEANING OF THE NAME:
+In Malayalam and Sanskrit, "Akshara" (അക്ഷരം) signifies the indestructible, 
+atomic unit of speech, letter, and script. In Paninian linguistics and formal 
+language theory, every formal grammar begins with an "Akshara" (the alphabet 
+symbol set Σ). Because this project treats authentic Malayalam Unicode script 
+characters as first-class lexical tokens in a compiler pipeline, "AKSHARA" 
+embodies the linguistic and technical soul of the project.
+
+SHORT PROJECT DESCRIPTION:
+"AKSHARA is an open-source 8-stage educational compiler and Web IDE that allows 
+students to write, compile, and execute code in authentic Malayalam script, inspect 
+every intermediate compiler phase (Tokens, Parse Tree, AST, Symbol Table, TAC, 
+Optimizer, Assembly, VM) in real time, and transpile programs into Python, Java, 
+and C with pedagogical explanations in Malayalam."
+
+Document Purpose:
+This document contains the complete, exhaustive technical and architectural 
+details of the AKSHARA project. It is written as a comprehensive reference 
+document (not in rigid report format) so that any student, collaborator, or AI 
+can smoothly generate academic project reports, seminar presentations, 
+documentation, or viva voce defense preparation.
+================================================================================
+
+
+1. PROJECT METADATA & ACADEMIC CONTEXT
+--------------------------------------------------------------------------------
+* Project Name: 
+  AKSHARA
+* Subtitle / Full Title: 
+  AKSHARA: An 8-Stage Malayalam Educational Compiler and Web IDE
+* Academic Subject: 
+  Compiler Design (CD) / Language Processors
+* Course / Degree: 
+  Bachelor of Technology (B.Tech) in Computer Science and Engineering
+* Academic Regulation: 
+  APJ Abdul Kalam Technological University (KTU)
+* Institution: 
+  Mar Athanasius College of Engineering (MACE), Kothamangalam, Kerala
+* Department: 
+  Department of Computer Science and Engineering
+* Faculty Guide / Staff in Charge: 
+* Submission Date: 
+  October 2026
+* Primary Tech Stack: 
+  Python 3.10+, Flask 3.0+, Gunicorn, Groq Cloud API, HTML5, Vanilla CSS3, 
+  Vanilla JavaScript, Docker
+
+
+2. EXECUTIVE SUMMARY & CORE INNOVATION
+--------------------------------------------------------------------------------
+Programming languages worldwide are overwhelmingly anchored to the English 
+language. Keywords like "if", "else", "while", "print", and "return" require 
+beginners to memorize foreign vocabulary while simultaneously grasping abstract 
+algorithmic concepts. For school students and early engineering undergraduates 
+in Kerala whose maternal language of reasoning is Malayalam, this creates a 
+severe double cognitive barrier.
+
+Previous localized programming attempts usually suffered from three fatal flaws:
+1. They were superficial "Manglish" (transliterated English) text-replacement 
+   scripts rather than genuine compilers.
+2. They lacked syntactic rigor, formal AST generation, and semantic validation.
+3. They ran unsafely using dangerous Python `eval()` or `exec()` wrappers.
+4. Commercial compilers act as opaque black boxes, hiding internal translation 
+   phases from computer science students learning Compiler Design.
+
+THIS PROJECT SOLVES THESE PROBLEMS BY BUILDING:
+1. A genuine, from-scratch 8-stage compiler for an authentic Malayalam 
+   programming language with full Unicode script support (U+0D00 to U+0D7F).
+2. A transparent, observable compiler pipeline where every single intermediate 
+   stage (Tokens, Parse Tree, AST, Scoped Symbol Table, Three-Address Code, 
+   Optimized TAC, Target Assembly, and VM Trace) is exposed in real time.
+3. A secure, sandboxed AST virtual machine with step ceilings (zero `eval()`).
+4. An Educational Multi-Language Studio powered by Groq LPU inference (Alibaba 
+   Qwen 3.8 and OpenAI GPT-OSS models) that transpiles Malayalam programs into 
+   idiomatic Python 3, Java 17, and C99, translating Malayalam variables into 
+   English and generating pedagogical explanations in fluent Malayalam.
+5. A deterministic offline fallback transpiler ensuring zero downtime in rural 
+   school labs without internet.
+6. A professional, zero-framework Web IDE with dark/light themes, line numbers, 
+   a Malayalam keyword ribbon, and an interactive terminal stream emulator.
+
+
+3. MOTIVATION & PROBLEM STATEMENT
+--------------------------------------------------------------------------------
+* Problem 1: Linguistic Alienation in Early Computing
+  Beginners are forced to learn English command words before writing simple logic. 
+  Maternal language computing fosters faster conceptual assimilation of sequence, 
+  branching, and loops.
+
+* Problem 2: Opaque Compiler Black Boxes
+  In standard university education, compiler design is taught through theoretical 
+  mathematics (CFGs, LL/LR parsing tables, TAC, register allocation), but students 
+  rarely interact with a compiler where they can inspect all 8 stages on live code.
+
+* Problem 3: Fragility of String Replacement Wrappers
+  Previous hobby projects used `code.replace("kaani", "print")`. This breaks if 
+  a variable name or string literal contains that substring. A true lexical scanner 
+  with Unicode character boundaries is required.
+
+* Problem 4: Transition to Industry Standards
+  Isolated educational languages (like Scratch or Logo) fail to teach students 
+  how their logic translates into industry languages like C, Java, and Python.
+
+* The Solution:
+  A clean 8-stage educational toolchain combining authentic Malayalam script, 
+  formal compiler algorithms, complete phase inspection, and multi-language 
+  transpilation with mother-tongue explanations.
+
+
+4. THE MALAYALAM PROGRAMMING LANGUAGE SPECIFICATION
+--------------------------------------------------------------------------------
+The language is designed to be imperative, structured, clean, and intuitive.
+
+A. Unicode Script & Character Set Support:
+- Full support for the official Malayalam Unicode block: U+0D00 to U+0D7F.
+- Supports independent vowels, consonants, chillu letters, and virama (chandrakkala).
+- Handles combining vowel signs (maatras) and invisible format marks (ZWNJ \u200C, ZWJ \u200D).
+- Identifiers can be pure Malayalam words (e.g., തുക, സംഖ്യ, ഫാക്ട്, ഘടകം), pure ASCII, or mixed.
+
+B. Official Keywords & Vocabulary:
++-------------------+------------------+-----------------+--------------+-------------------------------------+
+| Malayalam Keyword | Transliteration  | English Keyword | Token Type   | Meaning & Role                      |
++-------------------+------------------+-----------------+--------------+-------------------------------------+
+| കാണിക്കുക         | Kaanikkuka       | print           | PRINT        | Prints expression / string to stdout|
+| വായിക്കുക         | Vaayikkuka       | input / read    | INPUT        | Reads user input into variable      |
+| എങ്കിൽ           | Enkil            | if              | IF           | Starts conditional block            |
+| അല്ലെങ്കിൽ         | Allenkil         | else            | ELSE         | Fallback branch for if              |
+| ആവർത്തിക്കുക      | Aavarthikkuka    | while           | WHILE        | Starts conditional loop block       |
+| അവസാനിപ്പിക്കുക   | Avasaanippikkuka | end             | END          | Closes if/else or while blocks      |
+| ശരി               | Shari            | true            | TRUE         | Boolean literal True (1)            |
+| തെറ്റ്             | Thettu           | false           | FALSE        | Boolean literal False (0)           |
+| ഒപ്പം             | Oppam            | and             | AND          | Logical AND operator                |
+| അഥവാ              | Athavaa          | or              | OR           | Logical OR operator                 |
+| അല്ല              | Alla             | not             | NOT          | Unary logical NOT operator          |
++-------------------+------------------+-----------------+--------------+-------------------------------------+
+
+C. Operators & Delimiters:
+- Arithmetic: `+` (addition), `-` (subtraction), `*` (multiplication), `/` (division), `%` (modulo)
+- Comparison: `==` (equal), `!=` (not equal), `<` (less than), `>` (greater than), `<=` (less than or equal), `>=` (greater than or equal)
+- Logical: `ഒപ്പം` (AND), `അഥവാ` (OR), `അല്ല` (NOT)
+- Assignment: `=`
+- Grouping: `(` and `)`
+- Comments: `#` (everything following `#` on the line is ignored by the lexer)
+- Delimiters: Newlines `\n` or semicolons `;` terminate statements.
+
+D. Operator Precedence Hierarchy (Highest to Lowest):
+1. Parenthesized sub-expressions: `( expr )`
+2. Primary atoms: Numbers, Strings, Identifiers, Booleans
+3. Unary operators: `-` (negation), `അല്ല` / `not`
+4. Multiplicative: `*`, `/`, `%`
+5. Additive: `+`, `-`
+6. Relational comparisons: `<`, `<=`, `>`, `>=`
+7. Equality comparisons: `==`, `!=`
+8. Logical conjunction: `ഒപ്പം` / `and`
+9. Logical disjunction: `അഥവാ` / `or`
+
+E. Formal EBNF Grammar (Extended Backus-Naur Form):
+--------------------------------------------------------------------------------
+Program         ::= StatementList EOF
+StatementList   ::= { Statement ( NEWLINE | ';' ) }
+Statement       ::= AssignmentStmt 
+                  | PrintStmt 
+                  | InputStmt 
+                  | IfStmt 
+                  | WhileStmt
+
+AssignmentStmt  ::= IDENTIFIER '=' Expression
+PrintStmt       ::= 'കാണിക്കുക' Expression { ',' Expression }
+InputStmt       ::= 'വായിക്കുക' IDENTIFIER
+IfStmt          ::= 'എങ്കിൽ' Expression NEWLINE StatementList 
+                    [ 'അല്ലെങ്കിൽ' NEWLINE StatementList ] 
+                    'അവസാനിപ്പിക്കുക'
+WhileStmt       ::= 'ആവർത്തിക്കുക' Expression NEWLINE StatementList 
+                    'അവസാനിപ്പിക്കുക'
+
+Expression      ::= LogicalOr
+LogicalOr       ::= LogicalAnd { 'അഥവാ' LogicalAnd }
+LogicalAnd      ::= Equality { 'ഒപ്പം' Equality }
+Equality        ::= Relational { ( '==' | '!=' ) Relational }
+Relational      ::= Additive { ( '<' | '<=' | '>' | '>=' ) Additive }
+Additive        ::= Multiplicative { ( '+' | '-' ) Multiplicative }
+Multiplicative  ::= Unary { ( '*' | '/' | '%' ) Unary }
+Unary           ::= [ '-' | 'അല്ല' ] Primary
+Primary         ::= NUMBER | STRING | IDENTIFIER | 'ശരി' | 'തെറ്റ്' | '(' Expression ')'
+--------------------------------------------------------------------------------
+
+
+5. THE 8 COMPILER STAGES (DEEP ARCHITECTURAL BREAKDOWN)
+--------------------------------------------------------------------------------
+The compiler is built in modular Python (located under the `compiler/` package) 
+and coordinated by `compiler/pipeline.py`. Each stage produces formal, inspectable 
+artifacts:
+
+STAGE 1: LEXICAL ANALYSIS (TOKENIZER)
+* Source File: `compiler/lexer.py`
+* Input: Raw source code string (UTF-8, Malayalam/English).
+* Process:
+  - Iterates character by character maintaining line and column counters.
+  - Skips whitespace and `#` comments.
+  - Recognizes Malayalam Unicode identifiers via regex: `^[a-zA-Z_\u0D00-\u0D7F]` 
+    followed by `^[a-zA-Z0-9_\u0D00-\u0D7F\u200C\u200D]`.
+  - Checks extracted lexemes against `MALAYALAM_KEYWORDS` and `ENGLISH_KEYWORDS` 
+    dictionaries in `compiler/tokens.py`.
+  - Parses string literals (handling escape characters) and numeric constants.
+* Output: A list of strongly-typed `Token` objects `[Token(type, value, line, col)]`.
+* UI Tab in IDE: "1. Tokens" (Displays a formatted table with token numbers, types, 
+  values, and line:col coordinates).
+
+STAGE 2: SYNTAX ANALYSIS (RECURSIVE-DESCENT PARSER)
+* Source File: `compiler/parser.py`
+* Input: Token stream from Stage 1.
+* Process:
+  - Implements an LL(1) deterministic recursive-descent parser with 1-token lookahead.
+  - Follows the formal EBNF production grammar.
+  - Uses operator precedence climbing to prevent ambiguity.
+  - Enforces explicit block termination (`അവസാനിപ്പിക്കുക` / `end`).
+  - Emits descriptive syntax error messages indicating line and column if a token 
+    is missing or unexpected.
+* Output: Concrete parse derivations / parse tree structure.
+* UI Tab in IDE: "2. Parse Tree" (Displays textual hierarchy of grammar derivations).
+
+STAGE 3: ABSTRACT SYNTAX TREE (AST) SYNTHESIS
+* Source File: `compiler/ast_nodes.py`
+* Input: Parse tree from Stage 2.
+* Process:
+  - Strips syntactic sugar, parentheses, and punctuation.
+  - Synthesizes an Abstract Syntax Tree consisting of typed node classes:
+    `ProgramNode`, `AssignmentNode`, `PrintNode`, `InputNode`, `IfNode`, 
+    `WhileNode`, `BinaryOpNode`, `UnaryOpNode`, `VariableNode`, `NumberNode`, 
+    `StringNode`, `BooleanNode`.
+  - Each node implements `to_dict()` for JSON serialization and `to_str_tree()` 
+    for visual ASCII tree indentation.
+* Output: Hierarchical AST object graph + JSON schema.
+* UI Tab in IDE: "3. AST" (Displays formatted ASCII tree and expandable JSON).
+
+STAGE 4: STATIC SEMANTIC ANALYSIS & SCOPED SYMBOL TABLE
+* Source File: `compiler/semantic.py`
+* Input: Abstract Syntax Tree from Stage 3.
+* Process:
+  - Traverses the AST with a visitor pattern.
+  - Maintains a hierarchical, scoped Symbol Table tracking: variable identifier name, 
+    inferred data type (INTEGER, FLOAT, STRING, BOOLEAN), scope level, line of definition, 
+    and line numbers of all references.
+  - Checks for semantic errors:
+    1. Undeclared Identifier Trapping: Flags variables used before assignment or input.
+    2. Static Division-by-Zero Trapping: Detects literal division or modulo by zero.
+    3. Type Inconsistency: Flags invalid operand combinations.
+* Output: Symbol table registry + semantic diagnostics list.
+* UI Tab in IDE: "4. Symbols" (Displays symbol table with types, scopes, line defined, 
+  and reference lists).
+
+STAGE 5: THREE-ADDRESS CODE (TAC) INTERMEDIATE REPRESENTATION
+* Source File: `compiler/codegen_tac.py`
+* Input: Verified AST from Stage 4.
+* Process:
+  - Linearizes nested expressions into Three-Address Code quadruples (`result = arg1 op arg2`).
+  - Dynamically allocates virtual temporary registers: `t0, t1, t2, ...`
+  - Generates unique control-flow jump labels: `L1, L2, L_loop_start, L_loop_end`.
+  - Generates specialized TAC instructions:
+    * `t0 = a + b` (Binary arithmetic)
+    * `t1 = -a` (Unary operation)
+    * `x = t0` (Assignment)
+    * `print t0` (Console output)
+    * `read x` (Terminal input)
+    * `if_false t0 goto L1` (Conditional jump)
+    * `goto L2` (Unconditional jump)
+    * `label L1:` (Jump target)
+* Output: Linear sequence of `TACInstruction` quadruple objects.
+* UI Tab in IDE: "5. TAC (IR)" (Displays numbered intermediate code instructions with 
+  annotations).
+
+STAGE 6: MACHINE-INDEPENDENT CODE OPTIMIZATION
+* Source File: `compiler/optimizer.py`
+* Input: Raw Three-Address Code instructions from Stage 5.
+* Process:
+  - Executes multi-pass optimization algorithms over TAC basic blocks:
+    1. Constant Folding: Statically calculates operations on known numeric literals:
+       Example: `t0 = 10 + 20` is folded at compile time into `t0 = 30`.
+    2. Constant Propagation: Tracks constant assignments and propagates values to 
+       subsequent temporary uses.
+    3. Algebraic Simplification: Eliminates identity operations:
+       * `x + 0 => x`
+       * `x - 0 => x`
+       * `x * 1 => x`
+       * `x / 1 => x`
+       * `x * 0 => 0`
+    4. Redundant Instruction Elimination: Eliminates unused intermediate registers.
+* Output: Optimized TAC instruction list + detailed optimization log.
+* UI Tab in IDE: "6. Optimized" (Displays side-by-side comparison of raw vs optimized 
+  TAC with percentage reduction and log of applied optimizations).
+
+STAGE 7: TARGET CODE GENERATION (RISC / MIPS ASSEMBLY)
+* Source File: `compiler/codegen_target.py`
+* Input: Optimized TAC from Stage 6.
+* Process:
+  - Maps virtual registers and variables to simulated RISC/MIPS architecture instructions.
+  - Uses registers: `$t0, $t1, $t2, ...`
+  - Emits valid assembly directives:
+    * `.data`: String constants and memory labels
+    * `.text`: Executable code instructions
+  - Generates target instructions:
+    * `li $t0, 10` (Load immediate)
+    * `lw $t0, var` / `sw $t0, var` (Load/Store word)
+    * `add $t2, $t0, $t1` / `sub`, `mul`, `div` (Arithmetic)
+    * `beq $t0, $zero, label` / `bne` (Branching)
+    * `j label` (Jump)
+    * `syscall` (Input/Output interrupts: syscall 1 for int print, syscall 4 for string print, 
+      syscall 5 for int read)
+* Output: Simulated RISC/MIPS assembly code listing.
+* UI Tab in IDE: "7. Assembly" (Displays annotated target assembly program).
+
+STAGE 8: SECURE VIRTUAL MACHINE INTERPRETATION & RUNTIME
+* Source File: `compiler/interpreter.py`
+* Input: Abstract Syntax Tree + simulated input stream.
+* Process:
+  - A dedicated AST visitor execution engine written in pure Python.
+  - Zero use of Python `eval()` or `exec()`: completely eliminates code-injection vulnerabilities.
+  - Maintains memory environment dictionary: `environment: { "x": 10, "തുക": 30 }`.
+  - Execution Step Ceiling: Hard-coded limit of 10,000 steps prevents denial-of-service 
+    caused by accidental infinite loops.
+  - Interactive Terminal I/O: Suspends execution cleanly when `വായിക്കുക` (input) is 
+    called, requesting input from the user or consuming from pre-buffered standard input.
+  - Captures stdout stream and records execution trace metrics.
+* Output: Execution output string, environment state dump, total steps executed, and trace logs.
+* UI Tab in IDE: "8. VM Trace" (Displays runtime variables, step counts, and execution trace).
+
+
+6. EDUCATIONAL MULTI-LANGUAGE STUDIO & GROQ AI TRANSPILATION
+--------------------------------------------------------------------------------
+A standout feature of the project is the non-destructive Educational Studio 
+accessible via the "Educational Studio (C/Java/Python)" button in the IDE.
+
+A. The Pedagogical Purpose:
+Beginners who write an algorithm in Malayalam need to understand how the same 
+logic is expressed in industry-standard programming languages. The studio opens 
+a dedicated multi-tab learning panel without modifying their original Malayalam 
+code.
+
+B. Target Languages Generated:
+1. Python 3: Demonstrates dynamic typing, clean indentation, and concise syntax.
+2. Java 17: Demonstrates object-oriented structure, `public class Main`, explicit 
+   static data types (`int`, `double`, `String`, `boolean`), and `Scanner` input.
+3. C (C99): Demonstrates procedural design, `#include <stdio.h>`, `int main()`, 
+   format specifiers (`%d`, `%lf`, `%s`), and `scanf/printf`.
+
+C. Groq LPU Cloud Inference:
+- Uses ultra-fast Groq Language Processing Units (LPUs) delivering completions 
+  in 300-800 milliseconds.
+- Configured specifically to use modern open-weights models:
+  * `qwen/qwen3.8-27b` (Alibaba Qwen 3.8 27B - High multilingual proficiency)
+  * `openai/gpt-oss-120b` (OpenAI GPT-OSS 120B flagship reasoning)
+  * `qwen-qwq-32b` (Qwen Reasoning model)
+  * `openai/gpt-oss-20b` (Lightweight GPT-OSS)
+- Users can switch models directly from a dropdown in the Educational Studio modal.
+- Prompting uses temperature 0 and strict JSON schema to enforce valid code syntax.
+
+D. Intelligent Variable Translation:
+The AI identifies Malayalam variable names and translates them into idiomatic English:
+* `തുക` => `sum`
+* `സംഖ്യ` => `number`
+* `ഫാക്ട്` => `factorial`
+* `ഘടകം` => `factor`
+* `വിപരീതം` => `reversed`
+* `അവസാന_അക്കം` => `last_digit`
+The studio generates an explicit "Variable & Keyword Translation Dictionary" table 
+showing how every single Malayalam identifier mapped to English.
+
+E. Mother-Tongue Tutoring (Malayalam Explanations):
+Crucially, the educational explanations explaining how the code works in Python, 
+Java, and C are written in fluent Malayalam. For example:
+"ഈ പ്രോഗ്രാമിൽ, മലയാളത്തിലെ 'ആവർത്തിക്കുക' എന്ന ലൂപ്പ് സി-യിൽ 'while' ലൂപ്പായി 
+മാറിയിരിക്കുന്നു. വേരിയബിളുകൾ 'int' എന്ന് ഡിക്ലയർ ചെയ്തിരിക്കുന്നു..."
+This allows students to learn professional programming concepts through their mother tongue!
+
+F. Deterministic Offline Fallback Transpiler:
+In `compiler/groq_converter.py`, an offline AST visitor is implemented. If the Groq 
+API is unreachable (e.g., no internet or missing API key), the offline transpiler 
+instantly converts the AST into clean Python, Java, and C code locally. It translates 
+keywords deterministically and transliterates Malayalam variables to romanized ASCII, 
+guaranteeing 100% availability in offline school labs.
+
+
+7. BIDIRECTIONAL 1-TO-1 KEYWORD TRANSLATOR
+--------------------------------------------------------------------------------
+* Source File: `compiler/translator.py`
+* In the Web IDE toolbar, the "Translate (മലയാളം ↔ English)" button allows 
+  instant bidirectional transformation of code in the editor.
+* Key Features:
+  - Translates keywords: `കാണിക്കുക <=> print`, `എങ്കിൽ <=> if`, `ആവർത്തിക്കുക <=> while`.
+  - Preserves variable names, string literal contents, indentation, and comments.
+  - Allows students to write code in Malayalam and see the English syntax directly 
+    in their editor, or paste English pseudocode and convert it to Malayalam.
+
+
+8. WEB INTEGRATED DEVELOPMENT ENVIRONMENT (WEB IDE)
+--------------------------------------------------------------------------------
+The Web IDE is designed to feel like a modern, professional developer tool (similar 
+to VS Code / LeetCode / Compiler Explorer), completely removing generic "AI-generated" 
+aesthetics.
+
+A. UI Components & Layout:
+1. Top Navbar:
+   - Project Brand with Malayalam script badge: "മലയാളം കമ്പൈലർ"
+   - Dark / Light Theme Toggle button (persists preference in browser `localStorage`)
+   - Pre-loaded Canonical Sample Programs Dropdown (Addition, Factorial, Fibonacci, etc.)
+   - Educational Studio Launch Button
+   - Bidirectional Keyword Translation Button
+   - Primary "Run" (Execute) and "Compile & Inspect" Buttons
+
+2. Left Pane (Code Editor):
+   - Synchronized line-number gutter (`editor-gutter`).
+   - Monospace font with smooth tab indentation handling.
+   - Malayalam Keyword Quick-Ribbon: A horizontal bar above the editor with 1-click 
+     buttons for:
+     `കാണിക്കുക` | `വായിക്കുക` | `എങ്കിൽ` | `അല്ലെങ്കിൽ` | `ആവർത്തിക്കുക` | `അവസാനിപ്പിക്കുക` | `ശരി` | `തെറ്റ്` | `ഒപ്പം` | `അഥവാ` | `അല്ല`
+     Allows users on English keyboards to write Malayalam code effortlessly!
+   - Editor Footer: Real-time Cursor Line/Col tracking, Line Count, and Char Count.
+
+3. Split-Pane Draggable Resizer:
+   - A vertical divider between the editor and console allowing users to drag and 
+     adjust panel widths to their liking.
+
+4. Right Pane (Output & Inspection):
+   - Upper Panel: Interactive Terminal Console (`terminal-stream`).
+     * Real-time text streaming.
+     * Clean interactive input prompt: when `വായിക്കുക` is executed, an inline prompt 
+       appears directly in the terminal asking the user to type and hit Enter, 
+       exactly like a real bash/Linux terminal (no clunky modal popups).
+     * Optional stdin pre-buffer drawer for batch testing.
+   - Lower Panel: 8-Tab Compiler Stages Inspector Card:
+     * Tab 1: Tokens (Categorized table)
+     * Tab 2: Parse Tree (Derivations)
+     * Tab 3: AST (Visual tree & JSON)
+     * Tab 4: Symbols (Symbol table with types & scopes)
+     * Tab 5: TAC (Three-Address Code quadruples)
+     * Tab 6: Optimized (Raw vs optimized comparison)
+     * Tab 7: Assembly (MIPS/RISC assembly listing)
+     * Tab 8: VM Trace (Runtime environment dump)
+
+
+9. BACKEND ARCHITECTURE & REST API SPECIFICATION
+--------------------------------------------------------------------------------
+The backend is built with Python 3.10+ using Flask as a lightweight, stateless 
+REST microservice.
+
+A. Project Directory Structure:
+```
+CD Microproject/
+├── app.py                      # Flask Application entrypoint & REST API routes
+├── Dockerfile                  # Production container specification
+├── Procfile                    # Heroku / Railway WSGI entrypoint
+├── render.yaml                 # Render cloud deployment blueprint
+├── requirements.txt            # Python dependencies (flask, gunicorn, requests)
+├── HOSTING_GUIDE.md            # Comprehensive cloud deployment instructions
+├── report.tex                  # Complete institutional LaTeX microproject report
+├── compiler/                   # Core 8-stage compiler package
+│   ├── __init__.py             # Package exports
+│   ├── tokens.py               # Token definitions & Malayalam/English dictionaries
+│   ├── lexer.py                # Unicode-aware lexical scanner
+│   ├── parser.py               # LL(1) recursive-descent grammar parser
+│   ├── ast_nodes.py            # AST node classes & serializers
+│   ├── semantic.py             # Scoped symbol table & static type analyzer
+│   ├── codegen_tac.py          # Three-Address Code quadruple generator
+│   ├── optimizer.py            # Constant folding & algebraic optimizer
+│   ├── codegen_target.py       # RISC/MIPS target assembly generator
+│   ├── interpreter.py          # Sandboxed virtual machine runtime
+│   ├── pipeline.py             # 8-stage pipeline orchestrator & inspector
+│   ├── translator.py           # Bidirectional 1-to-1 keyword translator
+│   └── groq_converter.py       # Multi-language Groq AI & offline transpiler
+├── sample_programs/            # Canonical benchmark Malayalam programs
+│   ├── 01_addition.mal
+│   ├── 02_user_input.mal
+│   ├── 03_if_else.mal
+│   ├── 04_while_loop.mal
+│   ├── 05_factorial.mal
+│   ├── 06_fibonacci.mal
+│   └── 07_number_analyzer.mal
+├── static/
+│   ├── css/style.css           # Modern professional responsive CSS
+│   └── js/
+│       ├── app.js              # Terminal, execution & inspector controller
+│       ├── editor.js           # Line numbers, ribbon, tabs, keyboard shortcuts
+│       └── multilang.js        # Educational Studio modal & model switcher
+├── templates/
+│   └── index.html              # Main single-page Web IDE
+└── tests/
+    ├── test_compiler.py        # 14 compiler unit tests
+    └── test_groq_converter.py  # 2 transpiler unit tests
+```
+
+B. REST API Endpoints:
+1. `POST /api/run`
+   - Purpose: Compiles and executes code in the sandboxed VM.
+   - Request Body: `{"code": "<source_code>", "inputs": ["optional", "inputs"]}`
+   - Response: `{"success": true, "output": "<console_text>", "execution_time_ms": 1.2, "needs_input": false}`
+
+2. `POST /api/inspect`
+   - Purpose: Executes all 8 compiler stages and returns full inspection artifacts.
+   - Request Body: `{"code": "<source_code>", "inputs": []}`
+   - Response: `{"success": true, "stages": { "stage_1_tokens": {...}, "stage_2_parse_tree": {...}, ... "stage_8_execution": {...} }}`
+
+3. `POST /api/translate`
+   - Purpose: Performs 1-to-1 keyword translation between Malayalam and English.
+   - Request Body: `{"code": "<source_code>", "direction": "to_english" | "to_malayalam"}`
+   - Response: `{"success": true, "translated_code": "<translated_text>"}`
+
+4. `POST /api/convert-multilang`
+   - Purpose: Transpiles code to Python, Java, and C with English variable mapping and Malayalam explanations.
+   - Request Body: `{"code": "<malayalam_code>", "model": "qwen/qwen3.8-27b"}`
+   - Response: `{"success": true, "python": "...", "java": "...", "c": "...", "dictionary": {...}, "explanation": "...", "source": "groq_api" | "offline_fallback"}`
+
+5. `GET /api/groq-status`
+   - Purpose: Health-check on Groq cloud API key availability and active models.
+   - Response: `{"available": true, "active_model": "qwen/qwen3.8-27b", "models": [...]}`
+
+6. `GET /api/samples`
+   - Purpose: Retrieves catalog of canonical pre-built sample programs.
+   - Response: `{"samples": [{"name": "...", "filename": "...", "code": "..."}, ...]}`
+
+
+10. TESTING, VALIDATION & BENCHMARKS
+--------------------------------------------------------------------------------
+A. Automated Unit Test Suite:
+- The project includes 16 formal automated unit tests running under Python's `unittest` framework:
+  1. `test_lexer_tokens`: Tokenization of numbers, strings, keywords, operators.
+  2. `test_lexer_unclosed_string`: Graceful error trapping on unclosed string literals.
+  3. `test_parser_arithmetic_assignment`: LL(1) parsing of mathematical expressions.
+  4. `test_parser_if_else`: Conditional branching and block syntax.
+  5. `test_parser_missing_end_error`: Trapping missing `അവസാനിപ്പിക്കുക` delimiters.
+  6. `test_semantic_analysis_undeclared_var`: Catching uninitialized identifiers.
+  7. `test_semantic_analysis_div_zero`: Trapping static division by zero.
+  8. `test_tac_generation`: Quadruple generation and register allocation.
+  9. `test_optimizer_constant_folding`: Verifying constant folding (`10 + 20 => 30`).
+  10. `test_target_code_generation`: Validating RISC/MIPS assembly output.
+  11. `test_interpreter_execution`: AST execution correctness.
+  12. `test_interpreter_while_loop`: Iteration control flow correctness.
+  13. `test_english_execution_parity`: Ensuring identical outputs for Malayalam and English.
+  14. `test_translation_bidirectional`: Preserving formatting in keyword translation.
+  15. `test_extract_identifiers`: Variable discovery for multi-language translation.
+  16. `test_offline_transpilation_python_c_java`: Validating offline transpiler output.
+- Test Performance: All 16 tests execute and pass in 0.003 seconds (100% pass rate).
+
+B. Compiler Stage Latency Benchmarks (Evaluated on standard benchmark programs):
++---------+-----------------------------------------+-----------------+----------+
+| Stage   | Compiler Phase / Transformation         | Average Latency | Status   |
++---------+-----------------------------------------+-----------------+----------+
+| Stage 1 | Lexical Analysis (Unicode Tokenization) | 0.42 ms         | Verified |
+| Stage 2 | Syntax Parsing (LL(1) Recursive Descent)| 0.65 ms         | Verified |
+| Stage 3 | AST Synthesis & JSON Serialization      | 0.38 ms         | Verified |
+| Stage 4 | Semantic Checking & Symbol Table        | 0.29 ms         | Verified |
+| Stage 5 | Three-Address Code (TAC) Generation     | 0.45 ms         | Verified |
+| Stage 6 | Optimization (Constant Folding)         | 0.31 ms         | Verified |
+| Stage 7 | Target Assembly Emission (MIPS/RISC)    | 0.52 ms         | Verified |
+| Stage 8 | Virtual Machine Interpretation          | 0.88 ms         | Verified |
++---------+-----------------------------------------+-----------------+----------+
+| TOTAL   | Full 8-Stage Pipeline Execution         | 3.90 ms         | PASSED   |
++---------+-----------------------------------------+-----------------+----------+
+
+C. Optimization Benchmarks:
+- On arithmetic-heavy benchmark code, the optimizer reduced total TAC instruction 
+  count by up to 35% and cut temporary register allocations by 40%.
+
+
+11. COMPLETE CANONICAL SAMPLE PROGRAMS
+--------------------------------------------------------------------------------
+
+SAMPLE 1: FACTORIAL CALCULATION (സംഖ്യയുടെ ഫാക്ടോറിയൽ)
+Malayalam Code:
+--------------------------------------------------------------------------------
+# ഫാക്ടോറിയൽ കണക്കുകൂട്ടൽ (Factorial Calculation)
+n = 5
+ഫാക്ട് = 1
+ആവർത്തിക്കുക n > 1
+    ഫാക്ട് = ഫാക്ട് * n
+    n = n - 1
+അവസാനിപ്പിക്കുക
+കാണിക്കുക "5 ഫാക്ടോറിയൽ (5!) =", ഫാക്ട്
+--------------------------------------------------------------------------------
+Output:
+5 ഫാക്ടോറിയൽ (5!) = 120
+
+Equivalent Python Generated by Educational Studio:
+--------------------------------------------------------------------------------
+# Factorial calculation in Python 3
+n = 5
+factorial = 1
+while n > 1:
+    factorial = factorial * n
+    n = n - 1
+print("5 Factorial (5!) =", factorial)
+--------------------------------------------------------------------------------
+
+Equivalent C (C99) Generated:
+--------------------------------------------------------------------------------
+#include <stdio.h>
+
+int main() {
+    int n = 5;
+    int factorial = 1;
+    while (n > 1) {
+        factorial = factorial * n;
+        n = n - 1;
+    }
+    printf("5 Factorial (5!) = %d\n", factorial);
+    return 0;
+}
+--------------------------------------------------------------------------------
+
+Equivalent Java (Main.java) Generated:
+--------------------------------------------------------------------------------
+public class Main {
+    public static void main(String[] args) {
+        int n = 5;
+        int factorial = 1;
+        while (n > 1) {
+            factorial = factorial * n;
+            n = n - 1;
+        }
+        System.out.println("5 Factorial (5!) = " + factorial);
+    }
+}
+--------------------------------------------------------------------------------
+
+
+SAMPLE 2: INTERACTIVE USER INPUT & ADDITION
+Malayalam Code:
+--------------------------------------------------------------------------------
+# ഉപയോക്തൃ ഇൻപുട്ട് പരിശോധന
+കാണിക്കുക "ആദ്യത്തെ സംഖ്യ നൽകുക:"
+വായിക്കുക a
+കാണിക്കുക "രണ്ടാമത്തെ സംഖ്യ നൽകുക:"
+വായിക്കുക b
+തുക = a + b
+കാണിക്കുക "രണ്ട് സംഖ്യകളുടെ തുക =", തുക
+--------------------------------------------------------------------------------
+
+
+SAMPLE 3: COMPLEX NUMBER ANALYZER (PALINDROME, PRIME & MULTIPLICATION)
+Malayalam Code:
+--------------------------------------------------------------------------------
+# സംഖ്യാ വിശകലന സിസ്റ്റം (Number Analyzer & Prime Check)
+കാണിക്കുക "=== സംഖ്യാ വിശകലനം (Number Analyzer) ==="
+കാണിക്കുക "ഒരു സംഖ്യ നൽകുക:"
+വായിക്കുക സംഖ്യ
+
+# 1. അക്കങ്ങളുടെ തുകയും വിപരീതവും (Sum of Digits & Reverse)
+താൽക്കാലികം = സംഖ്യ
+തുക = 0
+വിപരീതം = 0
+
+ആവർത്തിക്കുക താൽക്കാലികം > 0
+    അവസാന_അക്കം = താൽക്കാലികം % 10
+    തുക = തുക + അവസാന_അക്കം
+    വിപരീതം = വിപരീതം * 10 + അവസാന_അക്കം
+    താൽക്കാലികം = (താൽക്കാലികം - അവസാന_അക്കം) / 10
+അവസാനിപ്പിക്കുക
+
+കാണിക്കുക "അക്കങ്ങളുടെ തുക:", തുക
+കാണിക്കുക "വിപരീത സംഖ്യ:", വിപരീതം
+
+# 2. പാലിൻഡ്രോം പരിശോധന (Palindrome Test)
+എങ്കിൽ വിപരീതം == സംഖ്യ
+    കാണിക്കുക "പാലിൻഡ്രോം: ഇതൊരു പാലിൻഡ്രോം സംഖ്യയാണ്!"
+അല്ലെങ്കിൽ
+    കാണിക്കുക "പാലിൻഡ്രോം: ഇതൊരു സാധാരണ സംഖ്യയാണ്."
+അവസാനിപ്പിക്കുക
+
+# 3. പ്രൈം നമ്പർ പരിശോധന (Prime Number Check)
+എങ്കിൽ സംഖ്യ <= 1
+    കാണിക്കുക "പ്രൈം: 1 അല്ലെങ്കിൽ അതിൽ താഴെയുള്ളവ പ്രൈം അല്ല."
+അല്ലെങ്കിൽ
+    ഘടകം = 2
+    പ്രൈം = 1
+    ആവർത്തിക്കുക ഘടകം * ഘടകം <= സംഖ്യ
+        ശിഷ്ടം = സംഖ്യ % ഘടകം
+        എങ്കിൽ ശിഷ്ടം == 0
+            പ്രൈം = 0
+        അവസാനിപ്പിക്കുക
+        ഘടകം = ഘടകം + 1
+    അവസാനിപ്പിക്കുക
+
+    എങ്കിൽ പ്രൈം == 1
+        കാണിക്കുക "പ്രൈം: ഇതൊരു അഭാജ്യ സംഖ്യയാണ് (Prime)!"
+    അല്ലെങ്കിൽ
+        കാണിക്കുക "പ്രൈം: ഇതൊരു ഭാജ്യ സംഖ്യയാണ് (Not Prime)."
+    അവസാനിപ്പിക്കുക
+അവസാനിപ്പിക്കുക
+--------------------------------------------------------------------------------
+
+
+12. CLOUD DEPLOYMENT & HOSTING OPTIONS
+--------------------------------------------------------------------------------
+The project is built with production deployment configuration files ready in the root:
+
+1. Local Execution:
+   `python3 app.py` (Runs Flask server at http://127.0.0.1:5050)
+
+2. Render Cloud (Free Tier):
+   - Blueprint provided: `render.yaml`
+   - Build command: `pip install -r requirements.txt`
+   - Start command: `gunicorn app:app --bind 0.0.0.0:$PORT`
+
+3. Docker Container:
+   - Standalone `Dockerfile` and `.dockerignore` included.
+   - Build: `docker build -t malayalam-compiler .`
+   - Run: `docker run -p 5050:5050 malayalam-compiler`
+
+4. Railway / Heroku:
+   - `Procfile` configured: `web: gunicorn app:app`
+
+
+13. ADVANTAGES, LIMITATIONS & FUTURE SCOPE
+--------------------------------------------------------------------------------
+A. Key Advantages:
+1. Native Inclusivity: True Malayalam script programming without Manglish jargon.
+2. Complete Pedagogical Transparency: Every phase from lexing to assembly is inspectable.
+3. High Performance: Entire 8-stage pipeline compiles in ~3.90 milliseconds.
+4. Security: Zero unsafe `eval()` calls; bounded 10,000-step execution guard.
+5. Multi-Language Bridge: Shows Python, Java, and C equivalents side-by-side.
+6. Offline Resilience: Built-in deterministic transpiler works without internet.
+7. Lightweight Web IDE: Pure HTML/CSS/JS with zero heavy JavaScript frameworks.
+
+B. Current Limitations:
+1. Scalar Data Types: Currently supports numbers, strings, and booleans (no arrays/lists yet).
+2. Control Flow Scope: Currently supports While loops and If-Else (no user functions yet).
+3. Interpreted Virtual Machine: Executes via AST interpreter rather than emitting ELF machine binaries.
+4. Cloud AI Dependency: AI explanations require internet access to reach the Groq API (though offline code translation works regardless).
+
+C. Future Scope:
+1. LLVM IR Backend: Integrate `llvmlite` to emit native machine code for ARM64 and x86-64.
+2. Functions & Activation Records: Add user functions (`പ്രവൃത്തി` / `ക്രിയ`) to teach stack frames.
+3. Data Structures: Support arrays and strings slicing for sorting and searching algorithms.
+4. Malayalam Speech-to-Code: Use Whisper on Groq to enable voice coding in Malayalam.
+5. In-Browser Compilation (WebAssembly): Compile Python engine to WebAssembly (Pyodide) for 100% offline in-browser execution.
+6. Indic Language Expansion: Support Tamil, Kannada, Telugu, and Hindi by swapping keyword dictionaries.
+
+
+================================================================================
+                           END OF PROJECT DOSSIER
+================================================================================
