@@ -32,7 +32,7 @@
     linkcolor=black,
     citecolor=black,
     urlcolor=blue,
-    pdftitle={AKSHARA: Malayalam Educational Compiler and Web IDE},
+    pdftitle={Malayalam Educational Compiler and Web IDE},
     pdfauthor={Department of Computer Science and Engineering}
 }
 
@@ -87,8 +87,8 @@
     \centering
     \vspace*{0.5cm}
     
-    {\Huge \textbf{AKSHARA:}}\\[0.3cm]
-    {\large \textbf{MALAYALAM EDUCATIONAL COMPILER AND WEB IDE}}\\[1.2cm]
+    {\Large \textbf{MALAYALAM EDUCATIONAL COMPILER:}}\\[0.3cm]
+    {\large \textbf{AN 8-STAGE COMPILER PIPELINE AND WEB IDE}}\\[1.2cm]
     
     {\large Micro Project Report}\\[0.6cm]
     
@@ -141,7 +141,7 @@
     \end{tikzpicture}\\[1.0cm]
 \end{center}
 
-\noindent This is to certify that the project report entitled \textbf{“AKSHARA: MALAYALAM EDUCATIONAL COMPILER AND WEB IDE”} is a bonafide record of the micro project work carried out by \textbf{AAYISHA MUHAMMED (MAC24CS001), ABHINAV VINOD (MAC24CS002), ADARSH PRASAD (MAC24CS003), ADITI M (MAC24CS004), AKASH MATHEW (MAC24CS005), ALAN JOSE (MAC24CS006)} in partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in Computer Science and Engineering under Mar Athanasius College of Engineering, Kothamangalam.
+\noindent This is to certify that the project report entitled \textbf{“MALAYALAM EDUCATIONAL COMPILER: AN 8-STAGE COMPILER PIPELINE AND WEB IDE”} is a bonafide record of the micro project work carried out by \textbf{AAYISHA MUHAMMED (MAC24CS001), ABHINAV VINOD (MAC24CS002), ADARSH PRASAD (MAC24CS003), ADITI M (MAC24CS004), AKASH MATHEW (MAC24CS005), ALAN JOSE (MAC24CS006)} in partial fulfillment of the requirements for the award of the degree of Bachelor of Technology in Computer Science and Engineering under Mar Athanasius College of Engineering, Kothamangalam.
 
 \vspace{3.5cm}
 
@@ -166,7 +166,7 @@
     {\Large \textbf{ACKNOWLEDGEMENT}}\\[1.0cm]
 \end{center}
 
-\noindent We express our sincere gratitude to everyone who supported and guided us throughout the development of the micro project entitled \textbf{“AKSHARA: MALAYALAM EDUCATIONAL COMPILER AND WEB IDE.”}
+\noindent We express our sincere gratitude to everyone who supported and guided us throughout the development of the micro project entitled \textbf{“MALAYALAM EDUCATIONAL COMPILER: AN 8-STAGE COMPILER PIPELINE AND WEB IDE.”}
 
 \vspace{0.4cm}
 \noindent We would like to express our sincere thanks to the Principal, Head of the Department of Computer Science and Engineering, our project coordinator, faculty members, and lab instructors who provided valuable guidance and technical direction during the design and development of this compiler project.
@@ -188,13 +188,13 @@
 \noindent In traditional computer science education, programming languages and compiler toolchains are standardized almost universally around the English lexicon. For novice learners whose primary language of thought is Malayalam, this English-centric paradigm introduces substantial cognitive friction, conflating the learning of computational thinking with the memorization of non-native syntax. Concurrently, undergraduate compiler design courses frequently suffer from pedagogical abstraction: students study the formal phases of translation—lexical analysis, syntactic parsing, semantic analysis, intermediate representation, code optimization, target code generation, and runtime execution—without having an accessible, transparent testbed where every intermediate data structure can be inspected interactively in real time.
 
 \vspace{0.3cm}
-\noindent This microproject presents \textbf{AKSHARA}, a fully functional, open, 8-stage educational compiler and Web Integrated Development Environment (IDE) engineered specifically for the Malayalam programming language. The language utilizes natural, phonetically grounded Malayalam script keywords—such as \textit{Kaanikkuka} (print), \textit{Vaayikkuka} (input), \textit{Enkil} (if), \textit{Allenkil} (else), \textit{Aavarthikkuka} (while), \textit{Avasaanippikkuka} (end), \textit{Shari} (true), and \textit{Thettu} (false)—while granting first-class support to Unicode variable identifiers (\texttt{U+0D00} to \texttt{U+0D7F}), combining vowel signs, and viramas.
+\noindent This microproject presents the \textbf{Malayalam Educational Compiler and Web IDE}, a fully functional, open, 8-stage educational compiler and Web Integrated Development Environment engineered specifically for the Malayalam programming language. The language utilizes natural, phonetically grounded Malayalam script keywords—such as \textit{Kaanikkuka} (print), \textit{Vaayikkuka} (input), \textit{Enkil} (if), \textit{Allenkil} (else), \textit{Aavarthikkuka} (while), \textit{Avasaanippikkuka} (end), \textit{Shari} (true), and \textit{Thettu} (false)—while granting first-class support to Unicode variable identifiers (\texttt{U+0D00} to \texttt{U+0D7F}), combining vowel signs, and viramas.
 
 \vspace{0.3cm}
-\noindent AKSHARA is built around a rigorous 8-stage modular pipeline: (1) a Unicode-aware Lexical Analyzer; (2) an LL(1) Recursive-Descent Syntax Parser; (3) an Abstract Syntax Tree (AST) synthesis engine; (4) a Static Semantic Analyzer with scoped symbol tables and static type checking; (5) a Three-Address Code (TAC) Quadruple intermediate representation generator; (6) a Multi-Pass Code Optimizer performing constant folding and algebraic simplification; (7) a RISC/MIPS-style Target Assembly code generator; and (8) a sandboxed Virtual Machine Interpreter with execution step guards and interactive input streaming.
+\noindent The compiler is built around a rigorous 8-stage modular pipeline: (1) a Unicode-aware Lexical Analyzer; (2) an LL(1) Recursive-Descent Syntax Parser; (3) an Abstract Syntax Tree (AST) synthesis engine; (4) a Static Semantic Analyzer with scoped symbol tables and static type checking; (5) a Three-Address Code (TAC) Quadruple intermediate representation generator; (6) a Multi-Pass Code Optimizer performing constant folding and algebraic simplification; (7) a RISC/MIPS-style Target Assembly code generator; and (8) a sandboxed Virtual Machine Interpreter with execution step guards and interactive input streaming.
 
 \vspace{0.3cm}
-\noindent To help students transition from localized syntax to professional software engineering, the system incorporates the \textbf{Educational Multi-Language Studio}, powered by high-speed Groq LPU inference (utilizing Alibaba Qwen 3.8 and OpenAI GPT-OSS models) coupled with a deterministic offline transpiler. The studio maps Malayalam programs into compilable Python 3, Java 17, and C99 code, creates an identifier translation dictionary, and supplies comprehensive concept notes written in Malayalam. Experimental evaluation across 16 automated test suites demonstrates that AKSHARA achieves 100\% translation correctness and an average 8-stage compilation latency of 3.90 milliseconds.
+\noindent To help students transition from localized syntax to professional software engineering, the system incorporates the \textbf{Educational Multi-Language Studio}, powered by high-speed Groq LPU inference (utilizing Alibaba Qwen 3.8 and OpenAI GPT-OSS models) coupled with a deterministic offline transpiler. The studio maps Malayalam programs into compilable Python 3, Java 17, and C99 code, creates an identifier translation dictionary, and supplies comprehensive concept notes written in Malayalam. Experimental evaluation across 16 automated test suites demonstrates that the compiler achieves 100\% translation correctness and an average 8-stage compilation latency of 3.90 milliseconds.
 
 % -----------------------------------------------------------------------------
 % TABLE OF CONTENTS, LIST OF FIGURES, LIST OF TABLES
@@ -222,7 +222,7 @@ Compiler design is a foundational subject within Computer Science and Engineerin
 
 Historically, virtually all programming languages have been constructed around English command words (\texttt{if}, \texttt{else}, \texttt{while}, \texttt{print}, \texttt{return}). For beginners in Kerala, particularly school students and early engineering undergraduates who conceptualize logic in Malayalam, this linguistic barrier impairs problem-solving. Learners are forced to spend intellectual energy decoding foreign vocabulary rather than focusing on core concepts such as algorithmic sequence, conditional branching, iteration, and variable assignment.
 
-Furthermore, commercial language compilers act as closed black boxes. When a student compiles a program in GCC, Clang, or Python, the intermediate artifacts—the token stream, parse tree, abstract syntax tree, symbol table, intermediate quadruples, and assembly instructions—are hidden. The \textbf{AKSHARA} system was developed to resolve both challenges: providing an authentic Malayalam-first programming environment while opening every single internal stage of the compiler for student inspection.
+Furthermore, commercial language compilers act as closed black boxes. When a student compiles a program in GCC, Clang, or Python, the intermediate artifacts—the token stream, parse tree, abstract syntax tree, symbol table, intermediate quadruples, and assembly instructions—are hidden. The \textbf{Malayalam Educational Compiler} project was developed to resolve both challenges: providing an authentic Malayalam-first programming environment while opening every single internal stage of the compiler for student inspection.
 
 \section{Problem Statement}
 In the domain of educational compiler design and localized programming, existing tools exhibit critical shortcomings:
@@ -463,7 +463,7 @@ Unlike production compilers that emit cryptic low-level memory faults (e.g., seg
 \chapter{PROPOSED SYSTEM ARCHITECTURE}
 
 \section{System Overview}
-The system architecture of the \textbf{AKSHARA} compiler is organized into three decoupled layers:
+The system architecture of the Malayalam Educational Compiler is organized into three decoupled layers:
 \begin{enumerate}
     \item \textbf{Frontend Presentation Layer}: Web-based IDE offering syntax editing, theme switching, interactive terminal I/O, and 8-stage compiler inspection tabs.
     \item \textbf{Backend Compiler Engine}: Modular Python compiler implementing the complete 8-stage pipeline from lexical analysis to bytecode interpretation.
@@ -471,7 +471,7 @@ The system architecture of the \textbf{AKSHARA} compiler is organized into three
 \end{enumerate}
 
 \section{8-Stage Compiler Pipeline Architecture}
-Figure 5.1 illustrates the architectural pipeline through which source programs are processed in AKSHARA.
+Figure 5.1 illustrates the architectural pipeline through which source programs are processed.
 
 \begin{figure}[htbp]
     \centering
@@ -503,7 +503,7 @@ Figure 5.1 illustrates the architectural pipeline through which source programs 
         \draw[arrow] (stage7) -- (stage8);
         \draw[arrow] (stage8) -- (output);
     \end{tikzpicture}
-    \caption{AKSHARA 8-Stage Compiler Processing Pipeline}
+    \caption{Malayalam Compiler 8-Stage Processing Pipeline}
     \label{fig:pipeline}
 \end{figure}
 
@@ -608,7 +608,7 @@ The complete system is built with open-source technologies summarized in Table 7
 
 \begin{table}[htbp]
     \centering
-    \caption{AKSHARA Technology Stack}
+    \caption{Malayalam Educational Compiler Technology Stack}
     \label{tab:techstack}
     \vspace{0.2cm}
     \begin{tabularx}{\textwidth}{llX}
@@ -655,7 +655,7 @@ Explainability is a core feature of the system. The Educational Studio generates
 \chapter{RESULTS AND OBSERVATIONS}
 
 \section{Experimental Setup}
-The AKSHARA compiler system was evaluated using an automated unit test suite comprising 16 test cases covering:
+The compiler system was evaluated using an automated unit test suite comprising 16 test cases covering:
 \begin{itemize}
     \item Unicode tokenization across Malayalam code points and diacritics;
     \item Arithmetic, relational, and logical operator precedence;
@@ -671,7 +671,7 @@ Table 8.1 lists the execution latency of each stage of the compiler evaluated on
 
 \begin{table}[htbp]
     \centering
-    \caption{AKSHARA Compiler Stage Execution Latency Benchmarks}
+    \caption{Compiler Stage Execution Latency Benchmarks}
     \label{tab:benchmarks}
     \vspace{0.2cm}
     \begin{tabularx}{\textwidth}{lXcc}
@@ -771,7 +771,7 @@ The 8-stage compiler architecture can be extended to support neighboring Indic r
 \newpage
 \chapter{CONCLUSION}
 
-The \textbf{AKSHARA} educational compiler and Web IDE demonstrates that regional language computing and classical compiler construction can be integrated into an effective pedagogical tool. By formalizing an authentic Malayalam programming language and developing an end-to-end 8-stage compiler pipeline, the project bridges the gap between maternal-language intuition and formal computer science principles.
+The \textbf{Malayalam Educational Compiler and Web IDE} demonstrates that regional language computing and classical compiler construction can be integrated into an effective pedagogical tool. By formalizing an authentic Malayalam programming language and developing an end-to-end 8-stage compiler pipeline, the project bridges the gap between maternal-language intuition and formal computer science principles.
 
 The inclusion of the \textbf{Educational Multi-Language Studio} powered by Groq LPU inference (utilizing Alibaba Qwen 3.8 and OpenAI GPT-OSS models) provides a practical learning bridge, teaching students how localized algorithms manifest in Python, Java, and C, with all explanations provided in Malayalam. Automated benchmarks confirmed 100\% test suite pass rates, secure step-limited execution, and sub-millisecond stage latencies. The project demonstrates that localized compiler construction is both technically sound and educationally transformative.
 
@@ -847,7 +847,7 @@ Table A.2 summarizes each stage of the compiler pipeline.
 
 \begin{table}[htbp]
     \centering
-    \caption{Summary of AKSHARA 8-Stage Compiler Pipeline and Transformations}
+    \caption{Summary of 8-Stage Compiler Pipeline and Transformations}
     \label{tab:pipeline_summary}
     \vspace{0.2cm}
     \begin{tabularx}{\textwidth}{clX}

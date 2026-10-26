@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: akshara-malayalam-compiler
+    name: malayalam-compiler
     env: python
     region: oregon
     plan: free

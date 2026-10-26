@@ -1,4 +1,4 @@
-# AKSHARA (അക്ഷര) - Malayalam Educational Compiler & Web IDE
+# Malayalam Educational Compiler & Web IDE
 
 A fully functional, online educational IDE and 8-stage compiler pipeline for a Malayalam-based programming language, built with **Python Flask** for the backend and **vanilla HTML5, CSS3, and modern JavaScript** for the frontend.
 

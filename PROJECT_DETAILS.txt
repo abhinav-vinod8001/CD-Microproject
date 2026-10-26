@@ -1,40 +1,34 @@
 ================================================================================
-             AKSHARA: MALAYALAM EDUCATIONAL COMPILER & WEB IDE
+          MALAYALAM EDUCATIONAL COMPILER & WEB IDE (CD MICROPROJECT)
                         COMPREHENSIVE PROJECT DOSSIER
 ================================================================================
-SHORT PROJECT NAME: 
-AKSHARA (അക്ഷര)
+PROJECT NAME: 
+Malayalam Educational Compiler & Web IDE (Short: Malayalam Compiler)
 
-MEANING OF THE NAME:
-In Malayalam and Sanskrit, "Akshara" (അക്ഷരം) signifies the indestructible, 
-atomic unit of speech, letter, and script. In Paninian linguistics and formal 
-language theory, every formal grammar begins with an "Akshara" (the alphabet 
-symbol set Σ). Because this project treats authentic Malayalam Unicode script 
-characters as first-class lexical tokens in a compiler pipeline, "AKSHARA" 
-embodies the linguistic and technical soul of the project.
-
-SHORT PROJECT DESCRIPTION:
-"AKSHARA is an open-source 8-stage educational compiler and Web IDE that allows 
-students to write, compile, and execute code in authentic Malayalam script, inspect 
-every intermediate compiler phase (Tokens, Parse Tree, AST, Symbol Table, TAC, 
-Optimizer, Assembly, VM) in real time, and transpile programs into Python, Java, 
-and C with pedagogical explanations in Malayalam."
+PROJECT DESCRIPTION:
+"A fully functional, open-source 8-stage educational compiler and Web IDE that 
+allows students to write, compile, and execute code in authentic Malayalam script, 
+inspect every intermediate compiler phase (Tokens, Parse Tree, AST, Symbol Table, 
+TAC, Optimizer, Assembly, VM) in real time, and transpile programs into Python, 
+Java, and C with pedagogical explanations in Malayalam."
 
 Document Purpose:
 This document contains the complete, exhaustive technical and architectural 
-details of the AKSHARA project. It is written as a comprehensive reference 
-document (not in rigid report format) so that any student, collaborator, or AI 
-can smoothly generate academic project reports, seminar presentations, 
-documentation, or viva voce defense preparation.
+details of the Malayalam Educational Compiler project. It is written as a 
+comprehensive reference document (not in rigid report format) so that any 
+student, collaborator, or AI can smoothly generate academic project reports, 
+seminar presentations, documentation, or viva voce defense preparation.
 ================================================================================
 
 
 1. PROJECT METADATA & ACADEMIC CONTEXT
 --------------------------------------------------------------------------------
 * Project Name: 
-  AKSHARA
+  Malayalam Educational Compiler & Web IDE
+* Short Name: 
+  Malayalam Compiler
 * Subtitle / Full Title: 
-  AKSHARA: An 8-Stage Malayalam Educational Compiler and Web IDE
+  Malayalam Educational Compiler: An 8-Stage Compiler Pipeline and Web IDE
 * Academic Subject: 
   Compiler Design (CD) / Language Processors
 * Course / Degree: 
